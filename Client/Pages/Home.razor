@@ -1,0 +1,20 @@
+﻿@page "/"
+
+<PageTitle>Idlenomics</PageTitle>
+
+<div class="centered">
+    @if (!@hasStarted)
+    {
+        <button class="btn btn-primary" @onclick="Start">Start</button>
+    }
+    else
+    {
+        <p role="status">Idlenomics coming soon!</p>
+    }
+</div>
+
+@code {
+    private bool hasStarted;
+
+    private void Start() => hasStarted = true;
+}
