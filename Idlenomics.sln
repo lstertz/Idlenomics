@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{0EE6BCAA-6FDF-4EA7-9D56-609DD7958CC9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{0EE6BCAA-6FDF-4EA7-9D56-609DD7958CC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cloud", "Cloud\Cloud.csproj", "{4A1E6431-0A2A-44BC-9732-F5173757222F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{0EE6BCAA-6FDF-4EA7-9D56-609DD7958CC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EE6BCAA-6FDF-4EA7-9D56-609DD7958CC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0EE6BCAA-6FDF-4EA7-9D56-609DD7958CC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A1E6431-0A2A-44BC-9732-F5173757222F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A1E6431-0A2A-44BC-9732-F5173757222F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A1E6431-0A2A-44BC-9732-F5173757222F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A1E6431-0A2A-44BC-9732-F5173757222F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
