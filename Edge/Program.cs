@@ -23,6 +23,8 @@ builder.Services.AddLogging(logging =>
     })
 );
 
+builder.Services.AddSingleton<IClient, CloudClient>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -36,5 +38,7 @@ app.UseHttpsRedirection()
 
 app.MapHub<ClientHub>("/clientHub");
 app.MapGet("/", () => "Welcome to the Idlenomics Edge!");
+
+await app.Services.GetService<IClient>().StartAsync();
 
 app.Run();
