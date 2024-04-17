@@ -1,4 +1,4 @@
-using Cloud;
+using Edge;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR();
@@ -7,7 +7,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowLocalHost",
         builder =>
         {
-            builder.WithOrigins("https://localhost:7285")
+            builder.WithOrigins("https://localhost:7267")
                    .AllowAnyHeader()
                    .AllowAnyMethod()
                    .AllowCredentials();
@@ -23,6 +23,8 @@ builder.Services.AddLogging(logging =>
     })
 );
 
+builder.Services.AddSingleton<IClient, CloudClient>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -34,7 +36,9 @@ app.UseHttpsRedirection()
     .UseCors("AllowLocalHost")
     .UseAuthorization();
 
-app.MapHub<EdgeHub>("/edgeHub");
-app.MapGet("/", () => "Welcome to the Idlenomics Cloud!");
+app.MapHub<ClientHub>("/clientHub");
+app.MapGet("/", () => "Welcome to the Idlenomics Edge!");
+
+await app.Services.GetService<IClient>().StartAsync();
 
 app.Run();

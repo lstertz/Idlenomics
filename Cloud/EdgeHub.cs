@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-namespace Cloud
+namespace Cloud;
+
+public class EdgeHub(ILogger<EdgeHub> _logger) : Hub
 {
-    public class EdgeHub(ILogger<EdgeHub> _logger) : Hub
+    public override Task OnConnectedAsync()
     {
-        public override Task OnConnectedAsync()
-        {
-            _logger.LogDebug("Edge connected.");
-            Console.WriteLine("Edge connected.");
-            return base.OnConnectedAsync();
-        }
+        _logger.LogDebug("Edge connected.");
+
+        return base.OnConnectedAsync();
     }
 }
