@@ -12,7 +12,7 @@ builder.Services.AddScoped(sp =>
     new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 HubConnection hubConnection = new HubConnectionBuilder()
-    .WithUrl(new Uri("https://localhost:7060/edgeHub"))
+    .WithUrl(new Uri("https://localhost:7285/clientHub"))
     .Build();
 
 try
