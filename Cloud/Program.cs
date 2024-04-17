@@ -14,6 +14,15 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Logging.ClearProviders();
+builder.Services.AddLogging(logging =>
+    logging.AddSimpleConsole(options =>
+    {
+        options.SingleLine = true;
+        options.TimestampFormat = "yyyy-MM-dd HH:mm:ss ";
+    })
+);
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

@@ -7,7 +7,7 @@ namespace Cloud
         public override Task OnConnectedAsync()
         {
             _logger.LogDebug("Edge connected.");
-            Console.WriteLine("Edge connected.");
+
             return base.OnConnectedAsync();
         }
     }
