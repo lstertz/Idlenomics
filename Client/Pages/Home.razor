@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
 
 <PageTitle>Idlenomics</PageTitle>
 
@@ -16,5 +17,21 @@
 @code {
     private bool hasStarted;
 
-    private void Start() => hasStarted = true;
+    private async Task Start()
+    {
+        HubConnection hubConnection = new HubConnectionBuilder()
+            .WithUrl(new Uri("https://localhost:7285/clientHub"))
+            .Build();
+
+        try
+        {
+            await hubConnection.StartAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+
+        hasStarted = true;
+    }
 }
