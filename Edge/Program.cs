@@ -1,4 +1,5 @@
 using Edge;
+using Edge.FeatureFlagging;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR();
@@ -23,7 +24,11 @@ builder.Services.AddLogging(logging =>
     })
 );
 
+builder.Services.Configure<FeatureFlaggerConfig>(
+    builder.Configuration.GetSection("FeatureFlaggerConfig"));
+
 builder.Services.AddSingleton<IClient, CloudClient>();
+builder.Services.AddSingleton<IFeatureFlagger, UnleashFeatureFlagger>();
 
 var app = builder.Build();
 
@@ -41,4 +46,9 @@ app.MapGet("/", () => "Welcome to the Idlenomics Edge!");
 
 await app.Services.GetService<IClient>().StartAsync();
 
+var unleash = app.Services.GetService<IFeatureFlagger>();
+await unleash.Initialize();
+
 app.Run();
+
+unleash.TearDown();

@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloud", "Cloud\Cloud.csproj", "{4A1E6431-0A2A-44BC-9732-F5173757222F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Edge", "Edge\Edge.csproj", "{50A6541F-F6B6-4D1A-A9A3-AD0B4BCCFAB2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Edge", "Edge\Edge.csproj", "{50A6541F-F6B6-4D1A-A9A3-AD0B4BCCFAB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
