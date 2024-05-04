@@ -1,4 +1,4 @@
-﻿namespace Edge.FeatureFlagging;
+﻿namespace Edge.Features.Flagging;
 
 /// <summary>
 /// Defines the config for the feature flagger.
