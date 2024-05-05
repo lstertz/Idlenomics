@@ -1,4 +1,5 @@
 ﻿using Edge.Users;
+using Shared.Features;
 
 namespace Edge.Features.Flagging;
 

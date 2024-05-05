@@ -1,9 +1,7 @@
-﻿using Edge.Features.Flagging;
-
-namespace Edge.Features;
+﻿namespace Shared.Features;
 
 /// <summary>
-/// Represents a feature, as flagged as enabled by an <see cref="IFeatureFlagger"/>.
+/// Represents a feature to be enabled on a Cloud, Edge, or Client by a flagger.
 /// </summary>
 public class Feature
 {

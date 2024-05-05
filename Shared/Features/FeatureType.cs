@@ -1,4 +1,4 @@
-﻿namespace Edge.Features;
+﻿namespace Shared.Features;
 
 /// <summary>
 /// The types of features.

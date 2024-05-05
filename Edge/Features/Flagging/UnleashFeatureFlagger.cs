@@ -1,5 +1,6 @@
 ﻿using Edge.Users;
 using Microsoft.Extensions.Options;
+using Shared.Features;
 using Unleash;
 using Unleash.ClientFactory;
 using Unleash.Internal;
