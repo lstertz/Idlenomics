@@ -200,3 +200,4 @@ __pycache__/
 
 # Windows thumbnail cache files
 Thumbs.db
+Edge/Properties/launchSettings.json

@@ -1,4 +1,7 @@
 using Edge;
+using Edge.Features.Clients;
+using Edge.Features.Flagging;
+using Edge.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR();
@@ -23,7 +26,16 @@ builder.Services.AddLogging(logging =>
     })
 );
 
-builder.Services.AddSingleton<IClient, CloudClient>();
+builder.Services.Configure<FeatureFlaggerConfig>(
+    builder.Configuration.GetSection("FeatureFlaggerConfig"));
+
+builder.Services.AddSingleton<IClient, CloudClient>().
+    AddHostedService(services => (CloudClient)services.GetService<IClient>()!);
+
+builder.Services.AddSingleton<IUserManager, UserManager>();
+builder.Services.AddSingleton<IFeatureFlagger, UnleashFeatureFlagger>().
+    AddHostedService(services => (UnleashFeatureFlagger)services.GetService<IFeatureFlagger>()!);
+builder.Services.AddSingleton<IClientFeatureCoordinator, ClientFeatureCoordinator>();
 
 var app = builder.Build();
 
@@ -39,6 +51,6 @@ app.UseHttpsRedirection()
 app.MapHub<ClientHub>("/clientHub");
 app.MapGet("/", () => "Welcome to the Idlenomics Edge!");
 
-await app.Services.GetService<IClient>().StartAsync();
+app.Services.GetService<IClientFeatureCoordinator>();
 
 app.Run();

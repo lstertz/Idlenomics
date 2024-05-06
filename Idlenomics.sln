@@ -4,10 +4,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{0EE6BCAA-6FDF-4EA7-9D56-609DD7958CC9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{50A6541F-F6B6-4D1A-A9A3-AD0B4BCCFAB2} = {50A6541F-F6B6-4D1A-A9A3-AD0B4BCCFAB2}
+		{F4038900-6637-48C7-B9D0-4CDEA2BAC3A3} = {F4038900-6637-48C7-B9D0-4CDEA2BAC3A3}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloud", "Cloud\Cloud.csproj", "{4A1E6431-0A2A-44BC-9732-F5173757222F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F4038900-6637-48C7-B9D0-4CDEA2BAC3A3} = {F4038900-6637-48C7-B9D0-4CDEA2BAC3A3}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Edge", "Edge\Edge.csproj", "{50A6541F-F6B6-4D1A-A9A3-AD0B4BCCFAB2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Edge", "Edge\Edge.csproj", "{50A6541F-F6B6-4D1A-A9A3-AD0B4BCCFAB2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4A1E6431-0A2A-44BC-9732-F5173757222F} = {4A1E6431-0A2A-44BC-9732-F5173757222F}
+		{F4038900-6637-48C7-B9D0-4CDEA2BAC3A3} = {F4038900-6637-48C7-B9D0-4CDEA2BAC3A3}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{F4038900-6637-48C7-B9D0-4CDEA2BAC3A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +40,10 @@ Global
 		{50A6541F-F6B6-4D1A-A9A3-AD0B4BCCFAB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50A6541F-F6B6-4D1A-A9A3-AD0B4BCCFAB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50A6541F-F6B6-4D1A-A9A3-AD0B4BCCFAB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4038900-6637-48C7-B9D0-4CDEA2BAC3A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4038900-6637-48C7-B9D0-4CDEA2BAC3A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4038900-6637-48C7-B9D0-4CDEA2BAC3A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4038900-6637-48C7-B9D0-4CDEA2BAC3A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

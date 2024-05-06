@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+@using Shared.Features
 
 <PageTitle>Idlenomics</PageTitle>
 
@@ -16,5 +18,28 @@
 @code {
     private bool hasStarted;
 
-    private void Start() => hasStarted = true;
+    private async Task Start()
+    {
+        HubConnection hubConnection = new HubConnectionBuilder()
+            .WithUrl(new Uri("https://localhost:7285/clientHub"))
+            .Build();
+
+        hubConnection.On<OnFeaturesUpdatedNotification>("OnFeaturesUpdated", notification =>
+        {
+            Console.WriteLine("Received updated features: ");
+            foreach (var feature in notification.Features)
+                Console.WriteLine($"Feature: {feature.Name}");
+        });
+
+        try
+        {
+            await hubConnection.StartAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+
+        hasStarted = true;
+    }
 }
