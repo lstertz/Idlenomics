@@ -74,33 +74,12 @@ public class UnleashFeatureFlagger(IOptions<FeatureFlaggerConfig> _config,
             {
                 yield return new Feature()
                 {
-                    Name = name,
-                    Type = FeatureType.Flag,
-                    Value = null
+                    Name = name
                 };
                 continue;
             }
 
-            FeatureType type;
-            switch (variant.Payload.Type)
-            {
-                case "string":
-                    type = FeatureType.String;
-                    break;
-                case "json":
-                    type = FeatureType.Json;
-                    break;
-                case "csv":
-                    type = FeatureType.List;
-                    break;
-                case "number":
-                    type = FeatureType.Number;
-                    break;
-                default:
-                    type = FeatureType.Flag;
-                    break;
-            }
-
+            FeatureType type = variant.Payload.Type.ParseToFeatureType();
             yield return new Feature()
             {
                 Name = name,

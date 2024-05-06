@@ -13,10 +13,10 @@ public class Feature
     /// <summary>
     /// The type of the feature.
     /// </summary>
-    public required FeatureType Type { get; init; }
+    public FeatureType Type { get; init; } = FeatureType.Flag;
 
     /// <summary>
     /// The value associated with the feature, if any.
     /// </summary>
-    public string? Value { get; init; }
+    public string? Value { get; init; } = null;
 }
