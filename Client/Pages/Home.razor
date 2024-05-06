@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.SignalR.Client
+@using Shared.Features
 
 <PageTitle>Idlenomics</PageTitle>
 
@@ -22,6 +23,13 @@
         HubConnection hubConnection = new HubConnectionBuilder()
             .WithUrl(new Uri("https://localhost:7285/clientHub"))
             .Build();
+
+        hubConnection.On<OnFeaturesUpdatedNotification>("OnFeaturesUpdated", notification =>
+        {
+            Console.WriteLine("Received updated features: ");
+            foreach (var feature in notification.Features)
+                Console.WriteLine($"Feature: {feature.Name}");
+        });
 
         try
         {
