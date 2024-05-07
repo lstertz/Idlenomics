@@ -1,9 +1,12 @@
 ﻿@page "/"
+@using Client.Edge
 @using Microsoft.AspNetCore.SignalR.Client
 @using Shared.Features
 @using System.Web
 
+@inject IEdgeConnector EdgeConnector;
 @inject NavigationManager NavigationManager;
+
 
 <PageTitle>Idlenomics</PageTitle>
 
@@ -28,29 +31,7 @@
         var uri = new Uri(NavigationManager.Uri);
         var queryParams = HttpUtility.ParseQueryString(uri.Query);
 
-        // TODO :: Decode the guest param to authenticate with login, get the userId 
-        //          from the login service.
-        var userId = queryParams[GuestParamName];
-
-        HubConnection hubConnection = new HubConnectionBuilder()
-            .WithUrl(new Uri($"https://localhost:7285/clientHub?userId={userId}"))
-            .Build();
-
-        hubConnection.On<OnFeaturesUpdatedNotification>("OnFeaturesUpdated", notification =>
-        {
-            Console.WriteLine("Received updated features: ");
-            foreach (var feature in notification.Features)
-                Console.WriteLine($"Feature: {feature.Name}");
-        });
-
-        try
-        {
-            await hubConnection.StartAsync();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
+        await EdgeConnector.Connect(queryParams[GuestParamName]);
 
         hasStarted = true;
     }

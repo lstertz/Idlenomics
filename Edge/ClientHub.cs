@@ -35,10 +35,11 @@ public class ClientHub(IUserManager _userManager, ILogger<ClientHub> _logger) : 
     public override Task OnConnectedAsync()
     {
         var userId = UserId;
-        _logger.LogDebug($"Client connected with user ID: {userId}");
 
         _userManager.RegisterUser(userId);
         _userManager.ConnectUser(userId, Context.ConnectionId);
+
+        _logger.LogDebug($"Client connected with user ID: {userId}");
 
         return base.OnConnectedAsync();
     }
@@ -46,7 +47,10 @@ public class ClientHub(IUserManager _userManager, ILogger<ClientHub> _logger) : 
     /// <inheritdoc/>
     public override Task OnDisconnectedAsync(Exception? exception)
     {
-        _userManager.DisconnectUser(UserId, Context.ConnectionId);
+        var userId = UserId;
+        _userManager.DisconnectUser(userId, Context.ConnectionId);
+
+        _logger.LogDebug($"Client disconnected with user ID: {userId}");
 
         return base.OnDisconnectedAsync(exception);
     }
