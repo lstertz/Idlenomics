@@ -12,6 +12,15 @@
 public class User(string _id)
 {
     /// <summary>
+    /// The businesses owned by this user.
+    /// </summary>
+    public IEnumerable<Business> Businesses => _businesses;
+    private List<Business> _businesses = new()
+    { 
+        new Business()  // TEMP :: Create a default initial business for every user.
+    };
+
+    /// <summary>
     /// The IDs of the user's current connections.
     /// </summary>
     public IEnumerable<string> ConnectionIds => _connectionIds;
@@ -30,7 +39,7 @@ public class User(string _id)
     /// when a user's state was last updated for either this Edge or any Edge that this user 
     /// is transferred to.
     /// </remarks>
-    public DateTime LastUpdatedOn { get; }
+    public DateTime LastUpdatedOn { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// The ID of the user.

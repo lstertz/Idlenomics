@@ -7,6 +7,8 @@ namespace Edge.Simulating
     {
         private const int UpdatesPerSecond = 30;
 
+        private static readonly TimeSpan OneSecond = TimeSpan.FromSeconds(1);
+
         /// <summary>
         /// The maximum time between simulation updates.
         /// </summary>
@@ -50,11 +52,23 @@ namespace Edge.Simulating
         {
             _stopwatch.Restart();
 
-            for(int c = 0, count = _users.Length; c < count; c++)
+            foreach (var user in _users)
             {
-                var user = _users[c];
+                // This temporarily replaces the more granular calculations specific to 
+                // the user's business.
 
-                // TODO :: Update counters.
+                var now = DateTime.UtcNow;
+                var change = (now - user.LastUpdatedOn).TotalSeconds;
+
+                user.LastUpdatedOn = now;
+
+                var businesses = user.Businesses.ToArray();
+                foreach (var business in businesses)
+                {
+                    business.Value += change;
+                    _logger.LogDebug("Updated {user}'s business value, {value}", 
+                        user.Id, business.Value);
+                }
             }
 
             _stopwatch.Stop();
