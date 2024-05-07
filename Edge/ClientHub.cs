@@ -9,15 +9,37 @@ namespace Edge;
 /// </summary>
 public class ClientHub(IUserManager _userManager, ILogger<ClientHub> _logger) : Hub
 {
+    private const string UserIdKey = "userId";
+
+    private string UserId
+    {
+        get
+        {
+            if (Context.Items.TryGetValue(UserIdKey, out var id))
+                return (string)id!;
+
+            var query = Context.GetHttpContext()!.Request.Query[UserIdKey];
+            if (query.Count() > 0)
+                id = query[0];
+            else
+                id = string.Empty;
+
+            Context.Items.Add(UserIdKey, id);
+
+            return (string)id!;
+        }
+    }
+
+
     /// <inheritdoc/>
     public override Task OnConnectedAsync()
     {
-        _logger.LogDebug("Client connected.");
+        var userId = UserId;
 
-        // TODO :: Provide a unique non personally identifiable user ID upon connection.
+        _userManager.RegisterUser(userId);
+        _userManager.ConnectUser(userId, Context.ConnectionId);
 
-        _userManager.RegisterUser("");
-        _userManager.ConnectUser("", Context.ConnectionId);
+        _logger.LogDebug($"Client connected with user ID: {userId}");
 
         return base.OnConnectedAsync();
     }
@@ -25,7 +47,10 @@ public class ClientHub(IUserManager _userManager, ILogger<ClientHub> _logger) : 
     /// <inheritdoc/>
     public override Task OnDisconnectedAsync(Exception? exception)
     {
-        _userManager.DisconnectUser("", Context.ConnectionId);
+        var userId = UserId;
+        _userManager.DisconnectUser(userId, Context.ConnectionId);
+
+        _logger.LogDebug($"Client disconnected with user ID: {userId}");
 
         return base.OnDisconnectedAsync(exception);
     }

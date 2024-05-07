@@ -1,6 +1,12 @@
 ﻿@page "/"
+@using Client.Edge
 @using Microsoft.AspNetCore.SignalR.Client
 @using Shared.Features
+@using System.Web
+
+@inject IEdgeConnector EdgeConnector;
+@inject NavigationManager NavigationManager;
+
 
 <PageTitle>Idlenomics</PageTitle>
 
@@ -16,29 +22,16 @@
 </div>
 
 @code {
+    private const string GuestParamName = "guest";
+
     private bool hasStarted;
 
     private async Task Start()
     {
-        HubConnection hubConnection = new HubConnectionBuilder()
-            .WithUrl(new Uri("https://localhost:7285/clientHub"))
-            .Build();
+        var uri = new Uri(NavigationManager.Uri);
+        var queryParams = HttpUtility.ParseQueryString(uri.Query);
 
-        hubConnection.On<OnFeaturesUpdatedNotification>("OnFeaturesUpdated", notification =>
-        {
-            Console.WriteLine("Received updated features: ");
-            foreach (var feature in notification.Features)
-                Console.WriteLine($"Feature: {feature.Name}");
-        });
-
-        try
-        {
-            await hubConnection.StartAsync();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
+        await EdgeConnector.Connect(queryParams[GuestParamName]);
 
         hasStarted = true;
     }
