@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 
-namespace Edge;
+namespace Edge.Cloud;
 
 /// <summary>
 /// Represents this Edge as a client to the Cloud.
 /// </summary>
-public class CloudClient(ILogger<ClientHub> _logger) : IClient, IHostedService
+public class CloudClient(ILogger<ClientHub> _logger) : ICloudClient, IHostedService
 {
     private HubConnection? _connection;
 

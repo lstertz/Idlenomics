@@ -1,4 +1,6 @@
-﻿namespace Edge.Users;
+﻿using Microsoft.AspNetCore.Mvc.ActionConstraints;
+
+namespace Edge.Users;
 
 /// <inheritdoc cref="IUserManager"/>
 public class UserManager(ILogger<UserManager> _logger) : IUserManager
@@ -17,6 +19,9 @@ public class UserManager(ILogger<UserManager> _logger) : IUserManager
     /// <inheritdoc/>
     public event Action<User>? OnUserDisconnected;
 
+    /// <inheritdoc/>
+    public event Action<IEnumerable<User>>? OnUsersChanged;
+
 
     /// <inheritdoc/>
     public void DeregisterUser(string userId)
@@ -28,7 +33,8 @@ public class UserManager(ILogger<UserManager> _logger) : IUserManager
         }
 
         _connectedUsers.Remove(user);
-        _users.Remove(userId);
+        if (_users.Remove(userId))
+            OnUsersChanged?.Invoke(_users.Values);
     }
 
     /// <inheritdoc/>
@@ -37,7 +43,8 @@ public class UserManager(ILogger<UserManager> _logger) : IUserManager
         // TODO :: Verify with the Cloud whether the user exists on another Edge and the 
         //          responsibility for updating user state needs to be transferred.
 
-        _users.TryAdd(userId, new(userId));
+        if (_users.TryAdd(userId, new(userId)))
+            OnUsersChanged?.Invoke(_users.Values);
     }
 
 

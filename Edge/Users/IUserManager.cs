@@ -33,6 +33,15 @@ public interface IUserManager
     /// </summary>
     event Action<User> OnUserDisconnected;
 
+    /// <summary>
+    /// The callback invoked whenever the set of users registered by this manager has changed.
+    /// </summary>
+    /// <remarks>
+    /// This occurs when a new user has been registered or a user has been deregistered.
+    /// The parameter is the new set of users.
+    /// </remarks>
+    event Action<IEnumerable<User>> OnUsersChanged;
+
 
     /// <summary>
     /// Informs the user manager that the identified user has connected to this Edge.
