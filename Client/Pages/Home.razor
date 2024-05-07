@@ -1,6 +1,9 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.SignalR.Client
 @using Shared.Features
+@using System.Web
+
+@inject NavigationManager NavigationManager;
 
 <PageTitle>Idlenomics</PageTitle>
 
@@ -16,12 +19,21 @@
 </div>
 
 @code {
+    private const string GuestParamName = "guest";
+
     private bool hasStarted;
 
     private async Task Start()
     {
+        var uri = new Uri(NavigationManager.Uri);
+        var queryParams = HttpUtility.ParseQueryString(uri.Query);
+
+        // TODO :: Decode the guest param to authenticate with login, get the userId 
+        //          from the login service.
+        var userId = queryParams[GuestParamName];
+
         HubConnection hubConnection = new HubConnectionBuilder()
-            .WithUrl(new Uri("https://localhost:7285/clientHub"))
+            .WithUrl(new Uri($"https://localhost:7285/clientHub?userId={userId}"))
             .Build();
 
         hubConnection.On<OnFeaturesUpdatedNotification>("OnFeaturesUpdated", notification =>

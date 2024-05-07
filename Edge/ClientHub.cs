@@ -9,15 +9,36 @@ namespace Edge;
 /// </summary>
 public class ClientHub(IUserManager _userManager, ILogger<ClientHub> _logger) : Hub
 {
+    private const string UserIdKey = "userId";
+
+    private string UserId
+    {
+        get
+        {
+            if (Context.Items.TryGetValue(UserIdKey, out var id))
+                return (string)id!;
+
+            var query = Context.GetHttpContext()!.Request.Query[UserIdKey];
+            if (query.Count() > 0)
+                id = query[0];
+            else
+                id = string.Empty;
+
+            Context.Items.Add(UserIdKey, id);
+
+            return (string)id!;
+        }
+    }
+
+
     /// <inheritdoc/>
     public override Task OnConnectedAsync()
     {
-        _logger.LogDebug("Client connected.");
+        var userId = UserId;
+        _logger.LogDebug($"Client connected with user ID: {userId}");
 
-        // TODO :: Provide a unique non personally identifiable user ID upon connection.
-
-        _userManager.RegisterUser("");
-        _userManager.ConnectUser("", Context.ConnectionId);
+        _userManager.RegisterUser(userId);
+        _userManager.ConnectUser(userId, Context.ConnectionId);
 
         return base.OnConnectedAsync();
     }
