@@ -46,7 +46,7 @@ public class ClientHub(IUserManager _userManager, ILogger<ClientHub> _logger) : 
     /// <inheritdoc/>
     public override Task OnDisconnectedAsync(Exception? exception)
     {
-        _userManager.DisconnectUser("", Context.ConnectionId);
+        _userManager.DisconnectUser(UserId, Context.ConnectionId);
 
         return base.OnDisconnectedAsync(exception);
     }
