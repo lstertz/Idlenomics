@@ -26,12 +26,12 @@
 
     private bool hasStarted;
 
-    private async Task Start()
+    private void Start()
     {
         var uri = new Uri(NavigationManager.Uri);
         var queryParams = HttpUtility.ParseQueryString(uri.Query);
 
-        await EdgeConnector.Connect(queryParams[GuestParamName]);
+        EdgeConnector.Connect(queryParams[GuestParamName]);
 
         hasStarted = true;
     }

@@ -36,7 +36,7 @@ namespace Client.Edge
                 Console.WriteLine(e);
             }
 
-            await ReadSimulationUpdate();
+            await HandleSimulationUpdates();
         }
 
         /// <inheritdoc/>
@@ -47,7 +47,7 @@ namespace Client.Edge
         }
 
 
-        private async Task ReadSimulationUpdate()
+        private async Task HandleSimulationUpdates()
         {
             if (_simulationUpdateStream == null)
             {
@@ -58,13 +58,15 @@ namespace Client.Edge
             // TODO :: Encapsulate the update in a formal data structure.
             await foreach (var update in _simulationUpdateStream)
             {
+                Console.WriteLine("Received simulation update.");
                 OnSimulationUpdate?.Invoke(update);
             }
         }
 
         private void Subscribe()
         {
-            _simulationUpdateStream = _hubConnection!.StreamAsync<double>("OnSimulationUpdate");
+            _simulationUpdateStream = _hubConnection!
+                .StreamAsync<double>("StreamSimulationUpdates");
 
             _hubConnection!.On<OnFeaturesUpdatedNotification>("OnFeaturesUpdated", notification =>
             {
