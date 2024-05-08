@@ -7,7 +7,11 @@ namespace Client.Edge
     /// <inheritdoc cref="IEdgeConnector"/>
     public class EdgeConnector(IConfiguration _configuration) : IEdgeConnector
     {
+        /// <inheritdoc/>
+        public event Action<double>? OnSimulationUpdate;
+
         private HubConnection? _hubConnection;
+        private IAsyncEnumerable<double>? _simulationUpdateStream;
 
 
         /// <inheritdoc/>
@@ -31,6 +35,8 @@ namespace Client.Edge
             {
                 Console.WriteLine(e);
             }
+
+            await ReadSimulationUpdate();
         }
 
         /// <inheritdoc/>
@@ -41,9 +47,26 @@ namespace Client.Edge
         }
 
 
+        private async Task ReadSimulationUpdate()
+        {
+            if (_simulationUpdateStream == null)
+            {
+                Console.WriteLine("Simulation update stream failed to initialize.");
+                return;
+            }
+
+            // TODO :: Encapsulate the update in a formal data structure.
+            await foreach (var update in _simulationUpdateStream)
+            {
+                OnSimulationUpdate?.Invoke(update);
+            }
+        }
+
         private void Subscribe()
         {
-            _hubConnection?.On<OnFeaturesUpdatedNotification>("OnFeaturesUpdated", notification =>
+            _simulationUpdateStream = _hubConnection!.StreamAsync<double>("OnSimulationUpdate");
+
+            _hubConnection!.On<OnFeaturesUpdatedNotification>("OnFeaturesUpdated", notification =>
             {
                 Console.WriteLine("Received updated features: ");
 

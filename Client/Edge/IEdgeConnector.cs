@@ -6,6 +6,12 @@
     public interface IEdgeConnector
     {
         /// <summary>
+        /// The callback invoked whenever there is a update for the game simulation.
+        /// </summary>
+        event Action<double>? OnSimulationUpdate;
+
+
+        /// <summary>
         /// Initiates the connection.
         /// </summary>
         /// <param name="userId">The ID of the connecting user.</param>
