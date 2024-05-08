@@ -15,14 +15,14 @@ namespace Client.Edge
 
 
         /// <inheritdoc/>
-        public async Task Connect(string? userId = null)
+        public async Task Connect(string? playerId = null)
         {
             var edgeUrl = _configuration["OverrideEdgeUrl"];
-            if (string.IsNullOrEmpty(userId))
-                userId = _configuration["DefaultUserId"];
+            if (string.IsNullOrEmpty(playerId))
+                playerId = _configuration["DefaultPlayerId"];
 
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl(new Uri($"{edgeUrl}/clientHub?userId={userId}"))
+                .WithUrl(new Uri($"{edgeUrl}/clientHub?playerId={playerId}"))
                 .Build();
 
             Subscribe();

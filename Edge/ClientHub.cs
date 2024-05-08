@@ -1,30 +1,31 @@
-﻿using Edge.Users;
+﻿using Edge.Players;
 using Microsoft.AspNetCore.SignalR;
+using System.Runtime.CompilerServices;
 
 namespace Edge;
 
 /// <summary>
-/// Manages the connections/disconnections and requests of a user connecting 
+/// Manages the connections/disconnections and requests of a player connecting 
 /// to this Edge through a Client.
 /// </summary>
-public class ClientHub(IUserManager _userManager, ILogger<ClientHub> _logger) : Hub
+public partial class ClientHub(IPlayerManager _playerManager, ILogger<ClientHub> _logger) : Hub
 {
-    private const string UserIdKey = "userId";
+    private const string PlayerIdKey = "playerId";
 
-    private string UserId
+    private string PlayerId
     {
         get
         {
-            if (Context.Items.TryGetValue(UserIdKey, out var id))
+            if (Context.Items.TryGetValue(PlayerIdKey, out var id))
                 return (string)id!;
 
-            var query = Context.GetHttpContext()!.Request.Query[UserIdKey];
+            var query = Context.GetHttpContext()!.Request.Query[PlayerIdKey];
             if (query.Count() > 0)
                 id = query[0];
             else
                 id = string.Empty;
 
-            Context.Items.Add(UserIdKey, id);
+            Context.Items.Add(PlayerIdKey, id);
 
             return (string)id!;
         }
@@ -34,12 +35,12 @@ public class ClientHub(IUserManager _userManager, ILogger<ClientHub> _logger) : 
     /// <inheritdoc/>
     public override Task OnConnectedAsync()
     {
-        var userId = UserId;
+        var playerId = PlayerId;
 
-        _userManager.RegisterUser(userId);
-        _userManager.ConnectUser(userId, Context.ConnectionId);
+        _playerManager.RegisterPlayer(playerId);
+        _playerManager.ConnectPlayer(playerId, Context.ConnectionId);
 
-        _logger.LogDebug($"Client connected with user ID: {userId}");
+        _logger.LogDebug($"Client connected with player ID: {playerId}");
 
         return base.OnConnectedAsync();
     }
@@ -47,10 +48,10 @@ public class ClientHub(IUserManager _userManager, ILogger<ClientHub> _logger) : 
     /// <inheritdoc/>
     public override Task OnDisconnectedAsync(Exception? exception)
     {
-        var userId = UserId;
-        _userManager.DisconnectUser(userId, Context.ConnectionId);
+        var playerId = PlayerId;
+        _playerManager.DisconnectPlayer(playerId, Context.ConnectionId);
 
-        _logger.LogDebug($"Client disconnected with user ID: {userId}");
+        _logger.LogDebug($"Client disconnected with player ID: {playerId}");
 
         return base.OnDisconnectedAsync(exception);
     }

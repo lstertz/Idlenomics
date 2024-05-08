@@ -1,7 +1,7 @@
 ﻿namespace Edge
 {
     /// <summary>
-    /// Represents a business that is owned by a <see cref="Users.User"/>.
+    /// Represents a business that is owned by a <see cref="Players.Player"/>.
     /// </summary>
     public class Business
     {

@@ -1,4 +1,4 @@
-﻿using Edge.Users;
+﻿using Edge.Players;
 using Shared.Features;
 
 namespace Edge.Features.Flagging;
@@ -16,9 +16,9 @@ public interface IFeatureFlagger
 
 
     /// <summary>
-    /// Provides the enabled features for the specified user.
+    /// Provides the enabled features for the specified player.
     /// </summary>
-    /// <param name="user">The user whose enabled features are to be provided.</param>
-    /// <returns>The specified user's enabled features.</returns>
-    IEnumerable<Feature> GetUserFeatures(User user);
+    /// <param name="player">The player whose enabled features are to be provided.</param>
+    /// <returns>The specified player's enabled features.</returns>
+    IEnumerable<Feature> GetPlayerFeatures(Player player);
 }

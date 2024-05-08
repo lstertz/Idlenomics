@@ -1,4 +1,4 @@
-﻿using Edge.Users;
+﻿using Edge.Players;
 using System.Diagnostics;
 
 namespace Edge.Simulating
@@ -18,17 +18,17 @@ namespace Edge.Simulating
         private readonly Stopwatch _stopwatch = new();
 
         private readonly ILogger<Simulator> _logger;
-        private readonly IUserManager _userManager;
+        private readonly IPlayerManager _playerManager;
 
-        private User[] _users = Array.Empty<User>();
+        private Player[] _players = Array.Empty<Player>();
 
         public Simulator(ILogger<Simulator> logger,
-            IUserManager userManager)
+            IPlayerManager playerManager)
         {
             _logger = logger;
-            _userManager = userManager;
+            _playerManager = playerManager;
 
-            _userManager.OnUsersChanged += users => _users = users.ToArray();
+            _playerManager.OnPlayersChanged += players => _players = players.ToArray();
         }
 
 
@@ -52,22 +52,22 @@ namespace Edge.Simulating
         {
             _stopwatch.Restart();
 
-            foreach (var user in _users)
+            foreach (var player in _players)
             {
                 // This temporarily replaces the more granular calculations specific to 
-                // the user's business.
+                // the player's business.
 
                 var now = DateTime.UtcNow;
-                var change = (now - user.LastUpdatedOn).TotalSeconds;
+                var change = (now - player.LastUpdatedOn).TotalSeconds;
 
-                user.LastUpdatedOn = now;
+                player.LastUpdatedOn = now;
 
-                var businesses = user.Businesses.ToArray();
+                var businesses = player.Businesses.ToArray();
                 foreach (var business in businesses)
                 {
                     business.Value += change;
-                    _logger.LogDebug("Updated {user}'s business value, {value}", 
-                        user.Id, business.Value);
+                    _logger.LogDebug("Updated {player}'s business value, {value}", 
+                        player.Id, business.Value);
                 }
             }
 

@@ -14,9 +14,9 @@
         /// <summary>
         /// Initiates the connection.
         /// </summary>
-        /// <param name="userId">The ID of the connecting user.</param>
+        /// <param name="playerId">The ID of the connecting player.</param>
         /// <returns>A Task to await the connection.</returns>
-        Task Connect(string? userId);
+        Task Connect(string? playerId);
 
         /// <summary>
         /// Stops and disposes of the connection.
