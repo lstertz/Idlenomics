@@ -36,6 +36,7 @@ namespace Client.Edge
                 Console.WriteLine(e);
             }
 
+            // TODO :: Add cancellation token support, to be cancelled on disconnect.
             await HandleSimulationUpdates();
         }
 
@@ -55,12 +56,8 @@ namespace Client.Edge
                 return;
             }
 
-            // TODO :: Encapsulate the update in a formal data structure.
             await foreach (var update in _simulationUpdateStream)
-            {
-                Console.WriteLine("Received simulation update.");
                 OnSimulationUpdate?.Invoke(update);
-            }
         }
 
         private void Subscribe()

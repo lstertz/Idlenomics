@@ -7,8 +7,6 @@ namespace Edge.Simulating
     {
         private const int UpdatesPerSecond = 30;
 
-        private static readonly TimeSpan OneSecond = TimeSpan.FromSeconds(1);
-
         /// <summary>
         /// The maximum time between simulation updates.
         /// </summary>
@@ -66,8 +64,6 @@ namespace Edge.Simulating
                 foreach (var business in businesses)
                 {
                     business.Value += change;
-                    _logger.LogDebug("Updated {player}'s business value, {value}", 
-                        player.Id, business.Value);
                 }
             }
 

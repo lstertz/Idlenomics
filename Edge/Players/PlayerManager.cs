@@ -79,4 +79,9 @@ public class PlayerManager(ILogger<PlayerManager> _logger) : IPlayerManager
 
         OnPlayerDisconnected?.Invoke(player);
     }
+
+
+    /// <inheritdoc/>
+    public Player? GetPlayer(string playerId) =>
+        _players.GetValueOrDefault(playerId);
 }

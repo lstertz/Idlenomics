@@ -73,4 +73,13 @@ public interface IPlayerManager
     /// </remarks>
     /// <param name="playerId">The ID of the new player to be registered.</param>
     void RegisterPlayer(string playerId);
+
+
+    /// <summary>
+    /// Provides the player identified by the given ID.
+    /// </summary>
+    /// <param name="playerId">The ID of the player to be provided.</param>
+    /// <returns>The identified player, or null if there is no such player 
+    /// known to this Edge.</returns>
+    Player? GetPlayer(string playerId);
 }
