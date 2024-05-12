@@ -1,7 +1,9 @@
 using Edge;
+using Edge.Cloud;
 using Edge.Features.Clients;
 using Edge.Features.Flagging;
-using Edge.Users;
+using Edge.Simulating;
+using Edge.Players;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR();
@@ -29,13 +31,16 @@ builder.Services.AddLogging(logging =>
 builder.Services.Configure<FeatureFlaggerConfig>(
     builder.Configuration.GetSection("FeatureFlaggerConfig"));
 
-builder.Services.AddSingleton<IClient, CloudClient>().
-    AddHostedService(services => (CloudClient)services.GetService<IClient>()!);
+builder.Services.AddSingleton<ICloudClient, CloudClient>().
+    AddHostedService(services => (CloudClient)services.GetService<ICloudClient>()!);
 
-builder.Services.AddSingleton<IUserManager, UserManager>();
+builder.Services.AddSingleton<IPlayerManager, PlayerManager>();
 builder.Services.AddSingleton<IFeatureFlagger, UnleashFeatureFlagger>().
     AddHostedService(services => (UnleashFeatureFlagger)services.GetService<IFeatureFlagger>()!);
 builder.Services.AddSingleton<IClientFeatureCoordinator, ClientFeatureCoordinator>();
+
+builder.Services.AddHostedService<Simulator>();
+
 
 var app = builder.Build();
 

@@ -1,4 +1,6 @@
-﻿namespace Client.Edge
+﻿using Shared.Simulation;
+
+namespace Client.Edge
 {
     /// <summary>
     /// Connects to the Edge that will manage this Client's state.
@@ -6,11 +8,17 @@
     public interface IEdgeConnector
     {
         /// <summary>
+        /// The callback invoked whenever there is a update for the game simulation.
+        /// </summary>
+        event Action<SimulationUpdate>? OnSimulationUpdate;
+
+
+        /// <summary>
         /// Initiates the connection.
         /// </summary>
-        /// <param name="userId">The ID of the connecting user.</param>
+        /// <param name="playerId">The ID of the connecting player.</param>
         /// <returns>A Task to await the connection.</returns>
-        Task Connect(string? userId);
+        Task Connect(string? playerId);
 
         /// <summary>
         /// Stops and disposes of the connection.

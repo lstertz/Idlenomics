@@ -1,4 +1,5 @@
 using Cloud;
+using Cloud.Tracking;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR();
@@ -22,6 +23,8 @@ builder.Services.AddLogging(logging =>
         options.TimestampFormat = "yyyy-MM-dd HH:mm:ss ";
     })
 );
+
+builder.Services.AddSingleton<IPlayerTracker, PlayerTracker>();
 
 var app = builder.Build();
 

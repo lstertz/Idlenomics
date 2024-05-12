@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Shared.Features;
+using Shared.Simulation;
 
 namespace Client.Edge
 {
@@ -7,18 +8,22 @@ namespace Client.Edge
     /// <inheritdoc cref="IEdgeConnector"/>
     public class EdgeConnector(IConfiguration _configuration) : IEdgeConnector
     {
+        /// <inheritdoc/>
+        public event Action<SimulationUpdate>? OnSimulationUpdate;
+
         private HubConnection? _hubConnection;
+        private IAsyncEnumerable<SimulationUpdate>? _simulationUpdateStream;
 
 
         /// <inheritdoc/>
-        public async Task Connect(string? userId = null)
+        public async Task Connect(string? playerId = null)
         {
             var edgeUrl = _configuration["OverrideEdgeUrl"];
-            if (string.IsNullOrEmpty(userId))
-                userId = _configuration["DefaultUserId"];
+            if (string.IsNullOrEmpty(playerId))
+                playerId = _configuration["DefaultPlayerId"];
 
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl(new Uri($"{edgeUrl}/clientHub?userId={userId}"))
+                .WithUrl(new Uri($"{edgeUrl}/clientHub?playerId={playerId}"))
                 .Build();
 
             Subscribe();
@@ -31,6 +36,9 @@ namespace Client.Edge
             {
                 Console.WriteLine(e);
             }
+
+            // TODO :: Add cancellation token support, to be cancelled on disconnect.
+            await HandleSimulationUpdates();
         }
 
         /// <inheritdoc/>
@@ -41,9 +49,24 @@ namespace Client.Edge
         }
 
 
+        private async Task HandleSimulationUpdates()
+        {
+            if (_simulationUpdateStream == null)
+            {
+                Console.WriteLine("Simulation update stream failed to initialize.");
+                return;
+            }
+
+            await foreach (var update in _simulationUpdateStream)
+                OnSimulationUpdate?.Invoke(update);
+        }
+
         private void Subscribe()
         {
-            _hubConnection?.On<OnFeaturesUpdatedNotification>("OnFeaturesUpdated", notification =>
+            _simulationUpdateStream = _hubConnection!
+                .StreamAsync<SimulationUpdate>("StreamSimulationUpdates");
+
+            _hubConnection!.On<OnFeaturesUpdatedNotification>("OnFeaturesUpdated", notification =>
             {
                 Console.WriteLine("Received updated features: ");
 

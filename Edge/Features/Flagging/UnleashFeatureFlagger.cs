@@ -1,4 +1,4 @@
-﻿using Edge.Users;
+﻿using Edge.Players;
 using Microsoft.Extensions.Options;
 using Shared.Features;
 using Unleash;
@@ -53,18 +53,18 @@ public class UnleashFeatureFlagger(IOptions<FeatureFlaggerConfig> _config,
 
 
     /// <inheritdoc/>
-    public IEnumerable<Feature> GetUserFeatures(User user)
+    public IEnumerable<Feature> GetPlayerFeatures(Player player)
     {
         if (_unleash == null)
         {
-            _logger.LogWarning("Failed to provide user feature flags as Unleash " +
+            _logger.LogWarning("Failed to provide player feature flags as Unleash " +
                 "has not been initialized.");
             yield break;
         }
 
         var context = new UnleashContext()
         {
-            UserId = user.Id
+            UserId = player.Id
         };
 
         foreach (var name in _featureNames)

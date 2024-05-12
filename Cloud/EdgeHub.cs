@@ -1,13 +1,36 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Cloud.Tracking;
+using Microsoft.AspNetCore.SignalR;
+using Shared.Players;
 
 namespace Cloud;
 
-public class EdgeHub(ILogger<EdgeHub> _logger) : Hub
+/// <summary>
+/// Manages the connections/disconnections and the messages of Edges to this Cloud.
+/// </summary>
+public class EdgeHub(ILogger<EdgeHub> _logger, IPlayerTracker _playerTracker) : Hub
 {
+    /// <inheritdoc/>
     public override Task OnConnectedAsync()
     {
         _logger.LogDebug("Edge connected.");
 
         return base.OnConnectedAsync();
+    }
+
+
+    /// <summary>
+    /// Handles player updates streamed from an Edge.
+    /// </summary>
+    /// <param name="updates">The updates to be handled.</param>
+    /// <returns>A task to await the asynchronous handling of the streamed updates.</returns>
+    public async Task HandleStreamedPlayerUpdates(IAsyncEnumerable<PlayerUpdate> updates)
+    {
+        await foreach (var update in updates)
+        {
+            _logger.LogDebug("Received a simulation update for player, {playerId}: {update}", 
+                update.PlayerId, update.SimulationUpdate.Value);
+
+            _playerTracker.UpdatePlayerData(update);
+        }
     }
 }

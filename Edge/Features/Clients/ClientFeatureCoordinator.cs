@@ -1,5 +1,5 @@
 ﻿using Edge.Features.Flagging;
-using Edge.Users;
+using Edge.Players;
 using Microsoft.AspNetCore.SignalR;
 using Shared.Features;
 
@@ -11,48 +11,48 @@ public class ClientFeatureCoordinator : IClientFeatureCoordinator
     private readonly IFeatureFlagger _featureFlagger;
     private readonly IHubContext<ClientHub> _hubContext;
     private readonly ILogger<ClientFeatureCoordinator> _logger;
-    private readonly IUserManager _userManager;
+    private readonly IPlayerManager _playerManager;
 
 
     public ClientFeatureCoordinator(IFeatureFlagger featureFlagger,
         IHubContext<ClientHub> hubContext,
         ILogger<ClientFeatureCoordinator> logger,
-        IUserManager userManager)
+        IPlayerManager playerManager)
     {
         _featureFlagger = featureFlagger;
         _hubContext = hubContext;
         _logger = logger;
-        _userManager = userManager;
+        _playerManager = playerManager;
 
         _featureFlagger.OnFeaturesUpdated += HandleFeaturesUpdate;
-        _userManager.OnUserConnected += HandleOnUserConnected;
+        _playerManager.OnPlayerConnected += HandleOnPlayerConnected;
     }
 
 
     private void HandleFeaturesUpdate()
     {
-        foreach (var user in _userManager.ConnectedUsers)
+        foreach (var player in _playerManager.ConnectedPlayers)
         {
-            var features = _featureFlagger.GetUserFeatures(user).ToArray();
-            _hubContext.Clients.Clients(user.ConnectionIds).SendAsync("OnFeaturesUpdated",
+            var features = _featureFlagger.GetPlayerFeatures(player).ToArray();
+            _hubContext.Clients.Clients(player.ConnectionIds).SendAsync("OnFeaturesUpdated",
                 new OnFeaturesUpdatedNotification()
                 {
                     Features = features
                 });
 
-            _logger.LogDebug("Sent updated features to {userId}.", user.Id);
+            _logger.LogDebug("Sent updated features to {playerId}.", player.Id);
         }
     }
 
-    private void HandleOnUserConnected(User user, string connectionId)
+    private void HandleOnPlayerConnected(Player player, string connectionId)
     {
-        var features = _featureFlagger.GetUserFeatures(user).ToArray();
-        _hubContext.Clients.Clients(user.ConnectionIds).SendAsync("OnFeaturesUpdated",
+        var features = _featureFlagger.GetPlayerFeatures(player).ToArray();
+        _hubContext.Clients.Clients(player.ConnectionIds).SendAsync("OnFeaturesUpdated",
             new OnFeaturesUpdatedNotification()
             { 
                 Features = features 
             });
 
-        _logger.LogDebug("Sent updated features to {userId}.", user.Id);
+        _logger.LogDebug("Sent updated features to {playerId}.", player.Id);
     }
 }

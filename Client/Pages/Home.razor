@@ -17,7 +17,7 @@
     }
     else
     {
-        <p role="status">Idlenomics coming soon!</p>
+        <p role="status">Current value: @currentValue</p>
     }
 </div>
 
@@ -25,13 +25,19 @@
     private const string GuestParamName = "guest";
 
     private bool hasStarted;
+    private int currentValue;
 
-    private async Task Start()
+    private void Start()
     {
         var uri = new Uri(NavigationManager.Uri);
         var queryParams = HttpUtility.ParseQueryString(uri.Query);
 
-        await EdgeConnector.Connect(queryParams[GuestParamName]);
+        EdgeConnector.Connect(queryParams[GuestParamName]);
+        EdgeConnector.OnSimulationUpdate += update =>
+        {
+            currentValue = (int)update.Value;
+            StateHasChanged();
+        };
 
         hasStarted = true;
     }
