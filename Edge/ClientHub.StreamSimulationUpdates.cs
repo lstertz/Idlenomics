@@ -34,6 +34,8 @@ public partial class ClientHub
             // TODO :: Encapsulate the update data.
             yield return player.Businesses.ToArray()[0].Value;
 
+            // Assume the assembling and sending of the player's data is negligible for 
+            //  for the stream rate (not worth the performance spent doing time tracking).
             await Task.Delay(StreamRate);
         }
     }

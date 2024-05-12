@@ -10,4 +10,12 @@ public class EdgeHub(ILogger<EdgeHub> _logger) : Hub
 
         return base.OnConnectedAsync();
     }
+
+    public async Task ReceiveStreamedSimulationUpdates(IAsyncEnumerable<double> updates)
+    {
+        await foreach (var update in updates)
+        {
+            _logger.LogDebug("Received a simulation update: {update}", update);
+        }
+    }
 }
