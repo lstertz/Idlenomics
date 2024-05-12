@@ -40,7 +40,7 @@ public partial class CloudClient(ILogger<ClientHub> _logger,
         _streamCancellationTokenSource = new();
         _streamCancellationToken = _streamCancellationTokenSource.Token;
 
-        await _connection.SendAsync("ReceiveStreamedSimulationUpdates", StreamSimulationUpdates(), 
+        await _connection.SendAsync("HandleStreamedPlayerUpdates", StreamPlayerUpdates(), 
             _streamCancellationToken);
     }
 

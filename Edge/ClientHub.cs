@@ -1,6 +1,5 @@
 ﻿using Edge.Players;
 using Microsoft.AspNetCore.SignalR;
-using System.Runtime.CompilerServices;
 
 namespace Edge;
 

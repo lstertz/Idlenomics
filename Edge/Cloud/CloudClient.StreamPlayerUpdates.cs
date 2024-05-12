@@ -8,7 +8,7 @@ namespace Edge.Cloud
         /// Stream simulation updates to the cloud.
         /// </summary>
         /// <returns>An async enumerable of a player's updated game simulation data.</returns>
-        private async IAsyncEnumerable<PlayerUpdate> StreamSimulationUpdates()
+        private async IAsyncEnumerable<PlayerUpdate> StreamPlayerUpdates()
         {
             while (!_streamCancellationToken.IsCancellationRequested)
             {
