@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Shared.Features;
+using Shared.Simulation;
 
 namespace Client.Edge
 {
@@ -8,10 +9,10 @@ namespace Client.Edge
     public class EdgeConnector(IConfiguration _configuration) : IEdgeConnector
     {
         /// <inheritdoc/>
-        public event Action<double>? OnSimulationUpdate;
+        public event Action<SimulationUpdate>? OnSimulationUpdate;
 
         private HubConnection? _hubConnection;
-        private IAsyncEnumerable<double>? _simulationUpdateStream;
+        private IAsyncEnumerable<SimulationUpdate>? _simulationUpdateStream;
 
 
         /// <inheritdoc/>
@@ -63,7 +64,7 @@ namespace Client.Edge
         private void Subscribe()
         {
             _simulationUpdateStream = _hubConnection!
-                .StreamAsync<double>("StreamSimulationUpdates");
+                .StreamAsync<SimulationUpdate>("StreamSimulationUpdates");
 
             _hubConnection!.On<OnFeaturesUpdatedNotification>("OnFeaturesUpdated", notification =>
             {

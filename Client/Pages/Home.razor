@@ -35,7 +35,7 @@
         EdgeConnector.Connect(queryParams[GuestParamName]);
         EdgeConnector.OnSimulationUpdate += update =>
         {
-            currentValue = (int)update;
+            currentValue = (int)update.Value;
             StateHasChanged();
         };
 

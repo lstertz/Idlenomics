@@ -1,4 +1,6 @@
-﻿namespace Client.Edge
+﻿using Shared.Simulation;
+
+namespace Client.Edge
 {
     /// <summary>
     /// Connects to the Edge that will manage this Client's state.
@@ -8,7 +10,7 @@
         /// <summary>
         /// The callback invoked whenever there is a update for the game simulation.
         /// </summary>
-        event Action<double>? OnSimulationUpdate;
+        event Action<SimulationUpdate>? OnSimulationUpdate;
 
 
         /// <summary>
