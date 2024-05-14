@@ -26,7 +26,8 @@ builder.Services.AddLogging(logging =>
 );
 
 builder.Services.AddSingleton<IPlayerTracker, PlayerTracker>();
-builder.Services.AddSingleton<IWorldUpdater, WorldUpdater>();
+builder.Services.AddSingleton<IWorldUpdater, WorldUpdater>().
+    AddHostedService(services => (WorldUpdater)services.GetService<IWorldUpdater>()!);
 
 var app = builder.Build();
 
