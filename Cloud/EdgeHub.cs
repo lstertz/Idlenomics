@@ -1,4 +1,5 @@
 ﻿using Cloud.Tracking;
+using Cloud.Updating;
 using Microsoft.AspNetCore.SignalR;
 using Shared.Players;
 
@@ -7,7 +8,8 @@ namespace Cloud;
 /// <summary>
 /// Manages the connections/disconnections and the messages of Edges to this Cloud.
 /// </summary>
-public class EdgeHub(ILogger<EdgeHub> _logger, IPlayerTracker _playerTracker) : Hub
+public class EdgeHub(ILogger<EdgeHub> _logger, IPlayerTracker _playerTracker, 
+    IWorldUpdater _worldUpdater) : Hub
 {
     /// <inheritdoc/>
     public override Task OnConnectedAsync()
@@ -30,7 +32,11 @@ public class EdgeHub(ILogger<EdgeHub> _logger, IPlayerTracker _playerTracker) : 
             _logger.LogDebug("Received a simulation update for player, {playerId}: {update}", 
                 update.PlayerId, update.SimulationUpdate.Value);
 
-            _playerTracker.UpdatePlayerData(update);
+            _worldUpdater.QueueDiff(
+                _playerTracker.UpdatePlayerData(update));
         }
     }
+
+
+    // TODO :: Implement stream (at a specific stream rate) for the current world state.
 }

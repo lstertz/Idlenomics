@@ -1,5 +1,6 @@
 using Cloud;
 using Cloud.Tracking;
+using Cloud.Updating;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR();
@@ -25,6 +26,7 @@ builder.Services.AddLogging(logging =>
 );
 
 builder.Services.AddSingleton<IPlayerTracker, PlayerTracker>();
+builder.Services.AddSingleton<IWorldUpdater, WorldUpdater>();
 
 var app = builder.Build();
 
