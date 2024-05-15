@@ -10,22 +10,24 @@
 
 <PageTitle>Idlenomics</PageTitle>
 
-<div class="centered">
-    @if (!@hasStarted)
-    {
+@if (!@hasStarted)
+{
+    <div class="centered">
         <button class="btn btn-primary" @onclick="Start">Start</button>
-    }
-    else
-    {
-        <p role="status">Current value: @currentValue</p>
-    }
-</div>
+    </div>
+}
+else
+{
+    <p>Current player value: @currentPlayerValue</p>
+    <p>Current world value: @currentWorldValue</p>
+}
 
 @code {
     private const string GuestParamName = "guest";
 
     private bool hasStarted;
-    private int currentValue;
+    private int currentPlayerValue;
+    private int currentWorldValue;
 
     private void Start()
     {
@@ -33,9 +35,10 @@
         var queryParams = HttpUtility.ParseQueryString(uri.Query);
 
         EdgeConnector.Connect(queryParams[GuestParamName]);
-        EdgeConnector.OnSimulationUpdate += update =>
+        EdgeConnector.OnClientUpdate += update =>
         {
-            currentValue = (int)update.Value;
+            currentPlayerValue = (int)update.ClientPlayerValue;
+            currentWorldValue = (int)update.WorldValue;
             StateHasChanged();
         };
 

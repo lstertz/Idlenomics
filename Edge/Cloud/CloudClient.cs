@@ -1,6 +1,6 @@
 ﻿using Edge.Players;
+using Edge.World;
 using Microsoft.AspNetCore.SignalR.Client;
-using System.Diagnostics;
 
 namespace Edge.Cloud;
 
@@ -8,24 +8,13 @@ namespace Edge.Cloud;
 /// Represents this Edge as a client to the Cloud.
 /// </summary>
 public partial class CloudClient(ILogger<ClientHub> _logger,
-    IPlayerManager _playerManager) : ICloudClient, IHostedService
+    IPlayerManager _playerManager, IWorldStateManager _worldStateManager) : 
+    ICloudClient, IHostedService
 {
-    private const int UpdatesPerSecond = 30;
-
-    /// <summary>
-    /// The maximum time between stream updates.
-    /// </summary>
-    private static readonly TimeSpan StreamRate =
-        TimeSpan.FromSeconds(1.0 / UpdatesPerSecond);
-
-
     private HubConnection? _connection;
 
-    private CancellationToken _streamCancellationToken;
-    private CancellationTokenSource? _streamCancellationTokenSource;
-
-    private readonly Stopwatch _stopwatch = new();
-
+    private CancellationToken _connectionCancellationToken;
+    private CancellationTokenSource? _connectionCancellationTokenSource;
 
 
     /// <inheritdoc/>
@@ -37,19 +26,24 @@ public partial class CloudClient(ILogger<ClientHub> _logger,
 
         await _connection.StartAsync(cancellationToken);
 
-        _streamCancellationTokenSource = new();
-        _streamCancellationToken = _streamCancellationTokenSource.Token;
+        _connectionCancellationTokenSource = new();
+        _connectionCancellationToken = _connectionCancellationTokenSource.Token;
 
-        await _connection.SendAsync("HandleStreamedPlayerUpdates", StreamPlayerUpdates(), 
-            _streamCancellationToken);
+        _ = _connection.SendAsync("HandleStreamedPlayerUpdates", StreamPlayerUpdates(),
+            _connectionCancellationToken);
+
+        SetUpWorldUpdateStream();
     }
 
     /// <inheritdoc/>
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        _streamCancellationTokenSource?.Cancel();
+        _connectionCancellationTokenSource?.Cancel();
 
         if (_connection != null)
             await _connection.StopAsync(cancellationToken);
     }
+
+
+    partial void SetUpWorldUpdateStream();
 }

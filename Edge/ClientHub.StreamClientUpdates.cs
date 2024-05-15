@@ -1,4 +1,5 @@
-﻿using Shared.Simulation;
+﻿using Edge.World;
+using Shared.Clients;
 using System.Runtime.CompilerServices;
 
 namespace Edge;
@@ -15,11 +16,13 @@ public partial class ClientHub
 
 
     /// <summary>
-    /// Streams simulation updates to the client.
+    /// Streams client updates to the client.
     /// </summary>
     /// <param name="cancellationToken">The token to cancel updates.</param>
-    /// <returns>An async enumerable of the updated game simulation data.</returns>
-    public async IAsyncEnumerable<SimulationUpdate> StreamSimulationUpdates(
+    /// <returns>An async enumerable of the updated game simulation data, 
+    /// structured specifically for the client it is being streamed to.</returns>
+    public async IAsyncEnumerable<ClientUpdate> StreamClientUpdates(
+        IWorldStateManager worldStateManager,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var player = _playerManager.GetPlayer(PlayerId);
@@ -34,8 +37,8 @@ public partial class ClientHub
         {
             yield return new()
             {
-                UpdateTime = player.LastUpdatedOn,
-                Value = player.Businesses.ToArray()[0].Value
+                ClientPlayerValue = player.Businesses.ToArray()[0].Value,
+                WorldValue = worldStateManager.GetValue()
             };
 
             await Task.Delay(StreamRate);

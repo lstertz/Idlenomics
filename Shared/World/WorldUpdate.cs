@@ -1,6 +1,9 @@
-﻿namespace Shared.Simulation
+﻿namespace Shared.World
 {
-    public struct SimulationUpdate
+    /// <summary>
+    /// Holds the most recent state of the world.
+    /// </summary>
+    public struct WorldUpdate
     {
         /// <summary>
         /// The time of the update.
@@ -8,7 +11,7 @@
         public DateTime UpdateTime { get; init; }
 
         /// <summary>
-        /// The player's current simulated value.
+        /// The current world state value.
         /// </summary>
         public double Value { get; init; }
     }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Shared.Clients;
 using Shared.Features;
-using Shared.Simulation;
 
 namespace Client.Edge
 {
@@ -9,10 +9,10 @@ namespace Client.Edge
     public class EdgeConnector(IConfiguration _configuration) : IEdgeConnector
     {
         /// <inheritdoc/>
-        public event Action<SimulationUpdate>? OnSimulationUpdate;
+        public event Action<ClientUpdate>? OnClientUpdate;
 
         private HubConnection? _hubConnection;
-        private IAsyncEnumerable<SimulationUpdate>? _simulationUpdateStream;
+        private IAsyncEnumerable<ClientUpdate>? _clientUpdateStream;
 
 
         /// <inheritdoc/>
@@ -38,7 +38,7 @@ namespace Client.Edge
             }
 
             // TODO :: Add cancellation token support, to be cancelled on disconnect.
-            await HandleSimulationUpdates();
+            _ = HandleClientUpdates();
         }
 
         /// <inheritdoc/>
@@ -49,22 +49,22 @@ namespace Client.Edge
         }
 
 
-        private async Task HandleSimulationUpdates()
+        private async Task HandleClientUpdates()
         {
-            if (_simulationUpdateStream == null)
+            if (_clientUpdateStream == null)
             {
-                Console.WriteLine("Simulation update stream failed to initialize.");
+                Console.WriteLine("Client update stream failed to initialize.");
                 return;
             }
 
-            await foreach (var update in _simulationUpdateStream)
-                OnSimulationUpdate?.Invoke(update);
+            await foreach (var update in _clientUpdateStream)
+                OnClientUpdate?.Invoke(update);
         }
 
         private void Subscribe()
         {
-            _simulationUpdateStream = _hubConnection!
-                .StreamAsync<SimulationUpdate>("StreamSimulationUpdates");
+            _clientUpdateStream = _hubConnection!
+                .StreamAsync<ClientUpdate>("StreamClientUpdates");
 
             _hubConnection!.On<OnFeaturesUpdatedNotification>("OnFeaturesUpdated", notification =>
             {

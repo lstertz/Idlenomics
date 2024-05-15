@@ -1,4 +1,5 @@
-﻿using Shared.Players;
+﻿using Cloud.World;
+using Shared.Players;
 
 namespace Cloud.Tracking;
 
@@ -9,11 +10,25 @@ public class PlayerTracker : IPlayerTracker
 
 
     /// <inheritdoc/>
-    public void UpdatePlayerData(PlayerUpdate update)
+    public WorldStateDiff UpdatePlayerData(PlayerUpdate update)
     {
         // TEMP :: Track the player upon receiving their first update, this should later 
         //          occur from an explicit message from an Edge when the player is registered.
 
+        WorldStateDiff diff;
+        if (_playerData.ContainsKey(update.PlayerId))
+            diff = new()
+            {
+                ValueChange = update.Value -
+                    _playerData[update.PlayerId].Value
+            };
+        else
+            diff = new()
+            {
+                ValueChange = update.Value
+            };
+
         _playerData[update.PlayerId] = update;
+        return diff;
     }
 }

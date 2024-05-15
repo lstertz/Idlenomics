@@ -49,7 +49,11 @@ public class UnleashFeatureFlagger(IOptions<FeatureFlaggerConfig> _config,
     }
 
     /// <inheritdoc/>
-    public async Task StopAsync(CancellationToken cancellationToken) => _unleash?.Dispose();
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        _unleash?.Dispose();
+        return Task.CompletedTask;
+    }
 
 
     /// <inheritdoc/>
