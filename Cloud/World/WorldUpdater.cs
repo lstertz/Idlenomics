@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 
-namespace Cloud.Updating;
+namespace Cloud.World;
 
 /// <inheritdoc cref="IWorldUpdater"/>
 public class WorldUpdater(ILogger<WorldUpdater> _logger) : BackgroundService, IWorldUpdater
@@ -15,14 +15,15 @@ public class WorldUpdater(ILogger<WorldUpdater> _logger) : BackgroundService, IW
         TimeSpan.FromSeconds(1.0 / UpdatesPerSecond);
 
     private readonly Stopwatch _stopwatch = new();
-    private readonly ConcurrentQueue<UpdateDiff> _diffQueue = new();
+    private readonly ConcurrentQueue<WorldStateDiff> _diffQueue = new();
 
-    public double CurrentWorldState => _currentWorldState;
-    private double _currentWorldState;
+    /// <inheritdoc/>
+    public WorldState CurrentWorldState => _currentWorldState;
+    private volatile WorldState _currentWorldState = new();
 
 
     /// <inheritdoc/>
-    public void QueueDiff(UpdateDiff diff) => 
+    public void QueueDiff(WorldStateDiff diff) =>
         _diffQueue.Enqueue(diff);
 
 
@@ -51,7 +52,11 @@ public class WorldUpdater(ILogger<WorldUpdater> _logger) : BackgroundService, IW
         while (_diffQueue.TryDequeue(out var diff))
             finalDiff += diff.ValueChange;
 
-        Interlocked.Exchange(ref _currentWorldState, _currentWorldState + finalDiff);
+        WorldState updatedState = new()
+        {
+            Value = _currentWorldState.Value + finalDiff
+        };
+        _currentWorldState = updatedState;
 
         _stopwatch.Stop();
     }

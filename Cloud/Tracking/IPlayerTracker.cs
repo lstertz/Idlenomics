@@ -1,4 +1,4 @@
-﻿using Cloud.Updating;
+﻿using Cloud.World;
 using Shared.Players;
 
 namespace Cloud.Tracking;
@@ -16,5 +16,5 @@ public interface IPlayerTracker
     /// <return>
     /// A diff for the change in player data.
     /// </return>
-    UpdateDiff UpdatePlayerData(PlayerUpdate update);
+    WorldStateDiff UpdatePlayerData(PlayerUpdate update);
 }

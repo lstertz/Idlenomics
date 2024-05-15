@@ -1,4 +1,4 @@
-﻿namespace Cloud.Updating;
+﻿namespace Cloud.World;
 
 /// <summary>
 /// Updates and maintains the state of the world.
@@ -8,12 +8,13 @@ public interface IWorldUpdater
     /// <summary>
     /// The current state of the world.
     /// </summary>
-    double CurrentWorldState { get; }
+    WorldState CurrentWorldState { get; }
+
 
     /// <summary>
     /// Queues a change to the world state to be processed on the next update.
     /// </summary>
     /// <param name="diff">The difference from the last known state to what should 
     /// be the current state.</param>
-    void QueueDiff(UpdateDiff diff);
+    void QueueDiff(WorldStateDiff diff);
 }

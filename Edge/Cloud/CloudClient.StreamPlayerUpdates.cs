@@ -1,16 +1,28 @@
 ﻿using Shared.Players;
+using System.Diagnostics;
 
 namespace Edge.Cloud
 {
     public partial class CloudClient
     {
+        private const int UpdatesPerSecond = 30;
+
         /// <summary>
-        /// Stream simulation updates to the cloud.
+        /// The maximum time between stream updates.
+        /// </summary>
+        private static readonly TimeSpan StreamRate =
+            TimeSpan.FromSeconds(1.0 / UpdatesPerSecond);
+
+        private readonly Stopwatch _stopwatch = new();
+
+
+        /// <summary>
+        /// Stream player updates to the cloud.
         /// </summary>
         /// <returns>An async enumerable of a player's updated game simulation data.</returns>
         private async IAsyncEnumerable<PlayerUpdate> StreamPlayerUpdates()
         {
-            while (!_streamCancellationToken.IsCancellationRequested)
+            while (!_connectionCancellationToken.IsCancellationRequested)
             {
                 _stopwatch.Restart();
 
@@ -19,11 +31,8 @@ namespace Edge.Cloud
                     yield return new()
                     {
                         PlayerId = player.Id,
-                        SimulationUpdate = new()
-                        {
-                            UpdateTime = player.LastUpdatedOn,
-                            Value = player.Businesses.ToArray()[0].Value
-                        }
+                        UpdateTime = player.LastUpdatedOn,
+                        Value = player.Businesses.ToArray()[0].Value
                     };
                 }
 

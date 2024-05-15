@@ -1,6 +1,4 @@
-﻿using Shared.Simulation;
-
-namespace Shared.Players
+﻿namespace Shared.Players
 {
     /// <summary>
     /// Encapsulates an identified player's updated simulation data.
@@ -13,8 +11,13 @@ namespace Shared.Players
         public string PlayerId { get; init; } = string.Empty;
 
         /// <summary>
-        /// The updated simulation data of the player.
+        /// The time of the update.
         /// </summary>
-        public SimulationUpdate SimulationUpdate { get; init; }
+        public DateTime UpdateTime { get; init; }
+
+        /// <summary>
+        /// The player's current simulated value.
+        /// </summary>
+        public double Value { get; init; }
     }
 }

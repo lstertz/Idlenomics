@@ -1,4 +1,4 @@
-﻿using Shared.Simulation;
+﻿using Shared.Clients;
 
 namespace Client.Edge
 {
@@ -8,9 +8,9 @@ namespace Client.Edge
     public interface IEdgeConnector
     {
         /// <summary>
-        /// The callback invoked whenever there is a update for the game simulation.
+        /// The callback invoked whenever there is a update for this client to hanble.
         /// </summary>
-        event Action<SimulationUpdate>? OnSimulationUpdate;
+        event Action<ClientUpdate>? OnClientUpdate;
 
 
         /// <summary>

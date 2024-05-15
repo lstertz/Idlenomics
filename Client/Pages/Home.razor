@@ -33,9 +33,9 @@
         var queryParams = HttpUtility.ParseQueryString(uri.Query);
 
         EdgeConnector.Connect(queryParams[GuestParamName]);
-        EdgeConnector.OnSimulationUpdate += update =>
+        EdgeConnector.OnClientUpdate += update =>
         {
-            currentValue = (int)update.Value;
+            currentValue = (int)update.ClientPlayerValue;
             StateHasChanged();
         };
 
