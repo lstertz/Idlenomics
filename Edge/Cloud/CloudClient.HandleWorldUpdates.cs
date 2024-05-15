@@ -28,7 +28,7 @@ namespace Edge.Cloud
                 if (_connectionCancellationToken.IsCancellationRequested)
                     return;
 
-                // TODO :: Handle the update.
+                _worldStateManager.UpdateState(update);
             }
         }
     }

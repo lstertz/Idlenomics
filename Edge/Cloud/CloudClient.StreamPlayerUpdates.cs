@@ -26,7 +26,12 @@ namespace Edge.Cloud
             {
                 _stopwatch.Restart();
 
-                foreach (var player in _playerManager.Players)
+                // TODO :: #17 : Manage a local copy of players that is only updated intentionally 
+                //          before an update cycle begins.
+
+                var players = _playerManager.Players.ToArray();
+
+                foreach (var player in players)
                 {
                     yield return new()
                     {

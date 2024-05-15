@@ -14,12 +14,7 @@ public partial class EdgeHub
         IAsyncEnumerable<PlayerUpdate> updates)
     {
         await foreach (var update in updates)
-        {
-            _logger.LogDebug("Received a simulation update for player, {playerId}: {update}", 
-                update.PlayerId, update.Value);
-
             _worldUpdater.QueueDiff(
                 _playerTracker.UpdatePlayerData(update));
-        }
     }
 }
