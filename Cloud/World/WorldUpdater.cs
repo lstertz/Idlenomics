@@ -6,7 +6,7 @@ namespace Cloud.World;
 /// <inheritdoc cref="IWorldUpdater"/>
 public class WorldUpdater(ILogger<WorldUpdater> _logger) : BackgroundService, IWorldUpdater
 {
-    private const int UpdatesPerSecond = 30;
+    private const int UpdatesPerSecond = 90;
 
     /// <summary>
     /// The maximum time between updates.

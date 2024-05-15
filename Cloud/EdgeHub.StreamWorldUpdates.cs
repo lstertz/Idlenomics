@@ -5,7 +5,7 @@ namespace Cloud;
 
 public partial class EdgeHub
 {
-    private const int UpdatesPerSecond = 30;
+    private const int UpdatesPerSecond = 60;
 
     /// <summary>
     /// The time between stream updates.
