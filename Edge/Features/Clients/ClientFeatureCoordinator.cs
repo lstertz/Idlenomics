@@ -47,7 +47,7 @@ public class ClientFeatureCoordinator : IClientFeatureCoordinator
     private void HandleOnPlayerConnected(Player player, string connectionId)
     {
         var features = _featureFlagger.GetPlayerFeatures(player).ToArray();
-        _hubContext.Clients.Clients(player.ConnectionIds).SendAsync("OnFeaturesUpdated",
+        _hubContext.Clients.Client(connectionId).SendAsync("OnFeaturesUpdated",
             new OnFeaturesUpdatedNotification()
             { 
                 Features = features 
