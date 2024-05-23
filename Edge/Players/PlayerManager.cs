@@ -1,24 +1,36 @@
-﻿namespace Edge.Players;
+﻿using System.Collections.Concurrent;
+
+namespace Edge.Players;
+
 
 /// <inheritdoc cref="IPlayerManager"/>
-public class PlayerManager(ILogger<PlayerManager> _logger) : IPlayerManager
+public class PlayerManager(ILogger<PlayerManager> _logger) : 
+    IPlayerConnectionManager, IPlayerRegistrar
 {
     /// <inheritdoc/>
-    public IEnumerable<Player> ConnectedPlayers => _connectedPlayers;
-    private readonly HashSet<Player> _connectedPlayers = new();
+    public IEnumerator<KeyValuePair<string, PlayerConnection>> PlayerConnections => 
+        _playerConnections.GetEnumerator();
+    // A mapping of connection ID to a player connection.
+    private readonly ConcurrentDictionary<string, PlayerConnection> _playerConnections = new();
 
     /// <inheritdoc/>
-    public IEnumerable<Player> Players => _players.Values;
-    private readonly Dictionary<string, Player> _players = new();
+    public IEnumerator<KeyValuePair<string, Player>> RegisteredPlayers => _players.GetEnumerator();
+    // A mapping of player ID to a Player.
+    private readonly ConcurrentDictionary<string, Player> _players = new();
+
 
     /// <inheritdoc/>
-    public event Action<Player, string>? OnPlayerConnected;
+    public event Action<PlayerConnection>? OnPlayerConnected;
 
     /// <inheritdoc/>
-    public event Action<Player>? OnPlayerDisconnected;
+    public event Action<PlayerConnection>? OnPlayerDisconnected;
+
 
     /// <inheritdoc/>
-    public event Action<IEnumerable<Player>>? OnPlayersChanged;
+    public event Action<Player>? OnPlayerDeregistered;
+
+    /// <inheritdoc/>
+    public event Action<Player>? OnPlayerRegistered;
 
 
     /// <inheritdoc/>
@@ -31,9 +43,12 @@ public class PlayerManager(ILogger<PlayerManager> _logger) : IPlayerManager
             return;
         }
 
-        _connectedPlayers.Remove(player);
-        if (_players.Remove(playerId))
-            OnPlayersChanged?.Invoke(_players.Values);
+        foreach (var connectionId in player.ConnectionIds)
+            if (_playerConnections.TryRemove(connectionId, out var playerConnection))
+                OnPlayerDisconnected?.Invoke(playerConnection);
+
+        if (_players.TryRemove(playerId, out _))
+            OnPlayerDeregistered?.Invoke(player);
     }
 
     /// <inheritdoc/>
@@ -42,8 +57,9 @@ public class PlayerManager(ILogger<PlayerManager> _logger) : IPlayerManager
         // TODO :: Verify with the Cloud whether the player exists on another Edge and the 
         //          responsibility for updating player state needs to be transferred.
 
-        if (_players.TryAdd(playerId, new(playerId)))
-            OnPlayersChanged?.Invoke(_players.Values);
+        Player player = new(playerId);
+        if (_players.TryAdd(playerId, player))
+            OnPlayerRegistered?.Invoke(player);
     }
 
 
@@ -57,11 +73,15 @@ public class PlayerManager(ILogger<PlayerManager> _logger) : IPlayerManager
             return;
         }
 
-        if (!player.IsConnected)
-            _connectedPlayers.Add(player);
+        PlayerConnection playerConnection = new()
+        {
+            ConnectionId = connectionId,
+            Player = player
+        };
+        _playerConnections.TryAdd(connectionId, playerConnection);
         player.AddConnection(connectionId);
 
-        OnPlayerConnected?.Invoke(player, connectionId);
+        OnPlayerConnected?.Invoke(playerConnection);
     }
 
     /// <inheritdoc/>
@@ -74,14 +94,36 @@ public class PlayerManager(ILogger<PlayerManager> _logger) : IPlayerManager
             return;
         }
 
-        if (!player.RemoveConnection(connectionId))
-            _connectedPlayers.Remove(player);
-
-        OnPlayerDisconnected?.Invoke(player);
+        player.RemoveConnection(connectionId);
+        if (_playerConnections.TryRemove(connectionId, out var playerConnection))
+            OnPlayerDisconnected?.Invoke(playerConnection);
     }
 
 
     /// <inheritdoc/>
     public Player? GetPlayer(string playerId) =>
         _players.GetValueOrDefault(playerId);
+
+    /// <inheritdoc/>
+    public PlayerConnection[] GetPlayerConnections(string playerId)
+    {
+        if (!_players.TryGetValue(playerId, out var player))
+            return Array.Empty<PlayerConnection>();
+
+        List<PlayerConnection> connections = new();
+        foreach (var id in player.ConnectionIds)
+            if (_playerConnections.TryGetValue(id, out var playerConnection))
+                connections.Add(playerConnection);
+
+        return connections.ToArray();
+    }
+
+    /// <inheritdoc/>
+    public bool IsConnected(string playerId)
+    {
+        if (!_players.TryGetValue(playerId, out var player))
+            return false;
+
+        return player.IsConnected;
+    }
 }

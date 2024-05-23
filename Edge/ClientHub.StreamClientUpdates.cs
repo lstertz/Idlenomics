@@ -25,7 +25,7 @@ public partial class ClientHub
         IWorldStateManager worldStateManager,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var player = _playerManager.GetPlayer(PlayerId);
+        var player = _playerRegistrar.GetPlayer(PlayerId);
         if (player == null)
         {
             _logger.LogWarning("Failed to provide simulation updates for player, {playerId}, " +

@@ -7,7 +7,8 @@ namespace Edge;
 /// Manages the connections/disconnections and requests of a player connecting 
 /// to this Edge through a Client.
 /// </summary>
-public partial class ClientHub(IPlayerManager _playerManager, ILogger<ClientHub> _logger) : Hub
+public partial class ClientHub(IPlayerConnectionManager _playerConnectionManager, 
+    IPlayerRegistrar _playerRegistrar, ILogger<ClientHub> _logger) : Hub
 {
     private const string PlayerIdKey = "playerId";
 
@@ -36,8 +37,8 @@ public partial class ClientHub(IPlayerManager _playerManager, ILogger<ClientHub>
     {
         var playerId = PlayerId;
 
-        _playerManager.RegisterPlayer(playerId);
-        _playerManager.ConnectPlayer(playerId, Context.ConnectionId);
+        _playerRegistrar.RegisterPlayer(playerId);
+        _playerConnectionManager.ConnectPlayer(playerId, Context.ConnectionId);
 
         _logger.LogDebug($"Client connected with player ID: {playerId}");
 
@@ -48,7 +49,7 @@ public partial class ClientHub(IPlayerManager _playerManager, ILogger<ClientHub>
     public override Task OnDisconnectedAsync(Exception? exception)
     {
         var playerId = PlayerId;
-        _playerManager.DisconnectPlayer(playerId, Context.ConnectionId);
+        _playerConnectionManager.DisconnectPlayer(playerId, Context.ConnectionId);
 
         _logger.LogDebug($"Client disconnected with player ID: {playerId}");
 

@@ -1,4 +1,5 @@
 ﻿using Edge.Players;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 
 namespace Edge.Simulating
@@ -16,17 +17,18 @@ namespace Edge.Simulating
         private readonly Stopwatch _stopwatch = new();
 
         private readonly ILogger<Simulator> _logger;
-        private readonly IPlayerManager _playerManager;
+        private readonly IPlayerRegistrar _playerRegistrar;
 
-        private Player[] _players = Array.Empty<Player>();
+        private ConcurrentDictionary<Player, object?> _players = new();
 
         public Simulator(ILogger<Simulator> logger,
-            IPlayerManager playerManager)
+            IPlayerRegistrar playerRegistrar)
         {
             _logger = logger;
-            _playerManager = playerManager;
+            _playerRegistrar = playerRegistrar;
 
-            _playerManager.OnPlayersChanged += players => _players = players.ToArray();
+            _playerRegistrar.OnPlayerRegistered += player => _players.TryAdd(player, null);
+            _playerRegistrar.OnPlayerDeregistered += player => _players.TryRemove(player, out _);
         }
 
 
@@ -50,7 +52,7 @@ namespace Edge.Simulating
         {
             _stopwatch.Restart();
 
-            foreach (var player in _players)
+            foreach (var player in _players.Keys)
             {
                 // This temporarily replaces the more granular calculations specific to 
                 // the player's business.
