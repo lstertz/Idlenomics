@@ -31,16 +31,18 @@ builder.Services.AddLogging(logging =>
 
 builder.Services.Configure<FeatureFlaggerConfig>(
     builder.Configuration.GetSection("FeatureFlaggerConfig"));
-
-builder.Services.AddSingleton<ICloudClient, CloudClient>().
-    AddHostedService(services => (CloudClient)services.GetService<ICloudClient>()!);
-
-builder.Services.AddSingleton<IPlayerManager, PlayerManager>();
-builder.Services.AddSingleton<IWorldStateManager, WorldStateManager>();
 builder.Services.AddSingleton<IFeatureFlagger, UnleashFeatureFlagger>().
     AddHostedService(services => (UnleashFeatureFlagger)services.GetService<IFeatureFlagger>()!);
 builder.Services.AddSingleton<IClientFeatureCoordinator, ClientFeatureCoordinator>();
 
+builder.Services.AddSingleton<ICloudClient, CloudClient>().
+    AddHostedService(services => (CloudClient)services.GetService<ICloudClient>()!);
+
+builder.Services.AddSingleton<IPlayerRegistrar, PlayerManager>();
+builder.Services.AddSingleton<IPlayerConnectionManager, PlayerManager>(services => 
+    (PlayerManager)services.GetService<IPlayerRegistrar>()!);
+
+builder.Services.AddSingleton<IWorldStateManager, WorldStateManager>();
 builder.Services.AddHostedService<Simulator>();
 
 

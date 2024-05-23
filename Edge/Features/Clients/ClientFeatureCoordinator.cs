@@ -11,48 +11,50 @@ public class ClientFeatureCoordinator : IClientFeatureCoordinator
     private readonly IFeatureFlagger _featureFlagger;
     private readonly IHubContext<ClientHub> _hubContext;
     private readonly ILogger<ClientFeatureCoordinator> _logger;
-    private readonly IPlayerManager _playerManager;
+    private readonly IPlayerConnectionManager _playerConnectionManager;
 
 
     public ClientFeatureCoordinator(IFeatureFlagger featureFlagger,
         IHubContext<ClientHub> hubContext,
         ILogger<ClientFeatureCoordinator> logger,
-        IPlayerManager playerManager)
+        IPlayerConnectionManager playerConnectionManager)
     {
         _featureFlagger = featureFlagger;
         _hubContext = hubContext;
         _logger = logger;
-        _playerManager = playerManager;
+        _playerConnectionManager = playerConnectionManager;
 
         _featureFlagger.OnFeaturesUpdated += HandleFeaturesUpdate;
-        _playerManager.OnPlayerConnected += HandleOnPlayerConnected;
+        _playerConnectionManager.OnPlayerConnected += HandleOnPlayerConnected;
     }
 
 
     private void HandleFeaturesUpdate()
     {
-        foreach (var player in _playerManager.ConnectedPlayers)
+        var connections = _playerConnectionManager.PlayerConnections;
+        while (connections.MoveNext())
         {
-            var features = _featureFlagger.GetPlayerFeatures(player).ToArray();
-            _hubContext.Clients.Clients(player.ConnectionIds).SendAsync("OnFeaturesUpdated",
+            var connection = connections.Current.Value;
+            var features = _featureFlagger.GetPlayerFeatures(connection.Player).ToArray();
+            _hubContext.Clients.Client(connection.ConnectionId).SendAsync("OnFeaturesUpdated",
                 new OnFeaturesUpdatedNotification()
                 {
                     Features = features
                 });
 
-            _logger.LogDebug("Sent updated features to {playerId}.", player.Id);
+            _logger.LogDebug("Sent updated features to {playerId}.", connection.Player.Id);
         }
     }
 
-    private void HandleOnPlayerConnected(Player player, string connectionId)
+    private void HandleOnPlayerConnected(PlayerConnection connection)
     {
-        var features = _featureFlagger.GetPlayerFeatures(player).ToArray();
-        _hubContext.Clients.Clients(player.ConnectionIds).SendAsync("OnFeaturesUpdated",
+        var features = _featureFlagger.GetPlayerFeatures(connection.Player).ToArray();
+        _hubContext.Clients.Client(connection.ConnectionId).SendAsync("OnFeaturesUpdated",
             new OnFeaturesUpdatedNotification()
             { 
                 Features = features 
             });
 
-        _logger.LogDebug("Sent updated features to {playerId}.", player.Id);
+        _logger.LogDebug("Sent updated features to {playerId}.", connection.Player.Id);
     }
 }

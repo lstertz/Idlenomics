@@ -3,7 +3,8 @@ using System.Diagnostics;
 
 namespace Edge.Simulating
 {
-    public class Simulator : BackgroundService
+    public class Simulator(ILogger<Simulator> _logger,
+        IPlayerRegistrar _playerRegistrar) : BackgroundService
     {
         private const int UpdatesPerSecond = 30;
 
@@ -14,20 +15,6 @@ namespace Edge.Simulating
             TimeSpan.FromSeconds(1.0 / UpdatesPerSecond);
 
         private readonly Stopwatch _stopwatch = new();
-
-        private readonly ILogger<Simulator> _logger;
-        private readonly IPlayerManager _playerManager;
-
-        private Player[] _players = Array.Empty<Player>();
-
-        public Simulator(ILogger<Simulator> logger,
-            IPlayerManager playerManager)
-        {
-            _logger = logger;
-            _playerManager = playerManager;
-
-            _playerManager.OnPlayersChanged += players => _players = players.ToArray();
-        }
 
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -50,8 +37,10 @@ namespace Edge.Simulating
         {
             _stopwatch.Restart();
 
-            foreach (var player in _players)
+            var players = _playerRegistrar.RegisteredPlayers;
+            while (players.MoveNext())
             {
+                var player = players.Current.Value;
                 // This temporarily replaces the more granular calculations specific to 
                 // the player's business.
 

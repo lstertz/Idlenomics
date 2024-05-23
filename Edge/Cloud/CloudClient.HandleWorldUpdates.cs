@@ -23,7 +23,9 @@ namespace Edge.Cloud
                 return;
             }
 
-            await foreach (var update in _worldUpdateStream)
+            await foreach (var update in _worldUpdateStream
+                .ConfigureAwait(false)
+                .WithCancellation(_connectionCancellationToken))
             {
                 if (_connectionCancellationToken.IsCancellationRequested)
                     return;

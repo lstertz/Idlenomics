@@ -29,10 +29,11 @@ namespace Edge.Cloud
                 // TODO :: #17 : Manage a local copy of players that is only updated intentionally 
                 //          before an update cycle begins.
 
-                var players = _playerManager.Players.ToArray();
-
-                foreach (var player in players)
+                var players = _playerRegistrar.RegisteredPlayers;
+                while (players.MoveNext())
                 {
+                    var player = players.Current.Value;
+
                     yield return new()
                     {
                         PlayerId = player.Id,

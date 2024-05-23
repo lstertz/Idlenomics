@@ -8,7 +8,7 @@ namespace Edge.Cloud;
 /// Represents this Edge as a client to the Cloud.
 /// </summary>
 public partial class CloudClient(ILogger<ClientHub> _logger,
-    IPlayerManager _playerManager, IWorldStateManager _worldStateManager) : 
+    IPlayerRegistrar _playerRegistrar, IWorldStateManager _worldStateManager) : 
     ICloudClient, IHostedService
 {
     private HubConnection? _connection;
