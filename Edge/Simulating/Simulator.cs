@@ -1,10 +1,10 @@
 ﻿using Edge.Players;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 
 namespace Edge.Simulating
 {
-    public class Simulator : BackgroundService
+    public class Simulator(ILogger<Simulator> _logger,
+        IPlayerRegistrar _playerRegistrar) : BackgroundService
     {
         private const int UpdatesPerSecond = 30;
 
@@ -15,21 +15,6 @@ namespace Edge.Simulating
             TimeSpan.FromSeconds(1.0 / UpdatesPerSecond);
 
         private readonly Stopwatch _stopwatch = new();
-
-        private readonly ILogger<Simulator> _logger;
-        private readonly IPlayerRegistrar _playerRegistrar;
-
-        private ConcurrentDictionary<Player, object?> _players = new();
-
-        public Simulator(ILogger<Simulator> logger,
-            IPlayerRegistrar playerRegistrar)
-        {
-            _logger = logger;
-            _playerRegistrar = playerRegistrar;
-
-            _playerRegistrar.OnPlayerRegistered += player => _players.TryAdd(player, null);
-            _playerRegistrar.OnPlayerDeregistered += player => _players.TryRemove(player, out _);
-        }
 
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -52,8 +37,10 @@ namespace Edge.Simulating
         {
             _stopwatch.Restart();
 
-            foreach (var player in _players.Keys)
+            var players = _playerRegistrar.RegisteredPlayers;
+            while (players.MoveNext())
             {
+                var player = players.Current.Value;
                 // This temporarily replaces the more granular calculations specific to 
                 // the player's business.
 
